@@ -1,25 +1,31 @@
 pipeline {
     agent any
+
     stages {
-        stage('git repo & clean') {
+        stage ('Compile Stage') {
+
             steps {
-               bat "git clone https://github.com/LunaMorena9/docker-jenkins-example.git"
-               bat "mvn clean -f docker-jenkins-example"
+                withMaven(maven : 'maven 3') {
+                    sh 'mvn clean compile'
+                }
             }
         }
-        stage('install') {
+
+        stage ('Testing Stage') {
+
             steps {
-                bat "mvn install -f docker-jenkins-example"
+                withMaven(maven : 'maven 3') {
+                    sh 'mvn test'
+                }
             }
         }
-        stage('test') {
+
+
+        stage ('Deployment Stage') {
             steps {
-                bat "mvn test -f docker-jenkins-example"
-            }
-        }
-        stage('package') {
-            steps {
-                bat "mvn package -f docker-jenkins-example"
+                withMaven(maven : 'maven 3') {
+                    sh 'mvn deploy'
+                }
             }
         }
     }
